@@ -87,6 +87,7 @@ func store(data: Data, toPath path: String) {
         if let error = error {
             print(error)
         }
+    }
         
 }
 
@@ -113,6 +114,40 @@ func getPosts(user: CurrentUser, completion: @escaping ([Post]?) -> Void) {
     var postArray: [Post] = []
     
     // YOUR CODE HERE
+    dbRef.child(firPostsNode).observeSingleEvent(of: .value, with: {(snapshot) in
+        if(snapshot.exists() == true) {
+            let value = snapshot.value as? [String: AnyObject]
+            user.getReadPostIDs(completion: {(readPosts) in
+                for (key, object) in value! {
+                    var username = ""
+                    var date = ""
+                    var thread = ""
+                    var path = ""
+                    
+                    if let FBusername = object.value(forKey: firUsernameNode) as? String {
+                        username = FBusername
+                    }
+                    if let FBdate = object.value(forKey: firDateNode) as? String {
+                        date = FBdate
+                    }
+                    if let FBthread = object.value(forKey: firThreadNode) as? String {
+                        thread = FBthread
+                    }
+                    if let FBpath = object.value(forKey: firImagePathNode) as? String {
+                        path = FBpath
+                    }
+                    var read = readPosts.contains(key)
+                    
+                    var posts = Post(id: key, username: username, postImagePath: path, thread: thread, dateString: date, read: read)
+                    postArray.append(posts)
+                }
+                completion(postArray)
+            })
+        }
+        else {
+            completion(nil)
+        }
+    })
 }
 
 func getDataFromPath(path: String, completion: @escaping (Data?) -> Void) {

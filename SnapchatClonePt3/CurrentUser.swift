@@ -60,21 +60,9 @@ class CurrentUser {
     */
     func addNewReadPost(postID: String) {
         // TODO
-        dbRef.child(firUsersNode).child(id!).observeSingleEvent(of: .value, with: {(snapshot) in
-            if (snapshot.exists() == true) {
-                let val = snapshot.value as? [String: [String: AnyObject]]
-                if let dict = val?[firReadPostsNode] {
-                    for (_, postID) in dict {
-                        postArray.append(postID as! String)
-                    }
-                }
-            }
-            completion(postArray)
-            
-        }) {(error) in
-            print(error.localizedDescription)
-            completion([])
-        }
+        readPostIDs?.append(postID)
+        dbRef.child(firUsersNode).child(id!).child(firReadPostsNode).childByAutoId().setValue(postID)
+
     }
     
 }
