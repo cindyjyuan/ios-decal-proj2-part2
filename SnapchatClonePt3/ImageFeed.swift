@@ -61,6 +61,14 @@ func addPost(postImage: UIImage, thread: String, username: String) {
     let path = "\(firStorageImagesPath)/\(UUID().uuidString)"
     
     // YOUR CODE HERE
+    var dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = dateFormat
+    let date = dateFormatter.string(from: Date())
+    
+    let dict = [firImagePathNode: path, firThreadNode: thread, firUsernameNode: username, firDateNode: date]
+    dbRef.child(firPostsNode).childByAutoId().setValue(dict)
+    
+    store(data: data, toPath: path)
 }
 
 /*
@@ -75,6 +83,11 @@ func store(data: Data, toPath path: String) {
     let storageRef = FIRStorage.storage().reference()
     
     // YOUR CODE HERE
+    storageRef.child(path).put(data, metadata: nil) {(metadata, error) in
+        if let error = error {
+            print(error)
+        }
+        
 }
 
 
